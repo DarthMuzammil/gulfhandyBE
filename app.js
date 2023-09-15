@@ -18,6 +18,28 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
+// Login endpoint
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  // Find the user by username in the database
+  const user = await ClientUser.findOne({ username });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // Compare the provided password with the stored hashed password
+  const passwordMatch = password === user.password
+
+  if (!passwordMatch) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  // If the credentials are valid, you can generate a JWT or set a session here
+  // For simplicity, we'll just send a success message
+  res.status(200).json({ message: 'Login successful' });
+});
 
 app.post('/add-service', (req, res) => {
   console.log(req.body)
