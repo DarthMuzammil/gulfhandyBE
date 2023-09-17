@@ -191,7 +191,7 @@ app.post('/create-client-user', (req, res) => {
     phoneNumber: req.body.phoneNumber,
     email: req.body.email
   });
-  clientUser.save().then((doc) => res.send(doc)).catch(e => res.send(e));
+  clientUser.save().then((doc) => res.status(200).json({ message: 'Signup successful' , id: doc.id, status: 200 })).catch(e => console.log(e))
 })
 
 app.post('/add-service-request', (req, res) => {
