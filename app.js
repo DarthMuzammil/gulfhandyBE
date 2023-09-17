@@ -83,6 +83,29 @@ const pipeline = [
       serviceDetails: 1,
     },
   },
+  {
+    $lookup: {
+      from: 'clientuserschemas', // The name of the services collection in your database
+      localField: 'userId',
+      foreignField: '_id',
+      as: 'userDetails',
+    },
+  },
+  {
+    $unwind: '$serviceDetails', // Unwind the array created by $lookup (optional)
+  },
+  {
+    $project: {
+      _id: 1,
+      userId: 1,
+      address: 1,
+      serviceId: 1,
+      status: 1,
+      handyMan: 1,
+      serviceDetails: 1,
+      userDetails: 1
+    },
+  },
 ];
 
 // Execute the aggregation pipeline
