@@ -26,7 +26,7 @@ app.post('/login', async (req, res) => {
   const user = await ClientUser.findOne({ username });
 
   if (!user) {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: 'User not found'});
   }
 
   // Compare the provided password with the stored hashed password
@@ -38,7 +38,7 @@ app.post('/login', async (req, res) => {
 
   // If the credentials are valid, you can generate a JWT or set a session here
   // For simplicity, we'll just send a success message
-  res.status(200).json({ message: 'Login successful' });
+  res.status(200).json({ message: 'Login successful' , id: user.id, status: 200 });
 });
 
 app.post('/add-service', (req, res) => {
@@ -100,6 +100,40 @@ app.get('/get-services', (req, res) => {
   Service.find({}).then(rr => {res.send(rr)}).catch(e => res.send(e))
 })
 
+// GET a single service by ID
+app.get('/get-service/:id', async (req, res) => {
+  try {
+    const serviceId = req.params.id;
+
+    const service = await Service.findById(serviceId);
+
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    res.json(service);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET a single service by ID
+app.get('/get-user/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await ClientUser.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.put('/assign-handy-man', (req, res) => {
 
 })
@@ -118,6 +152,7 @@ app.post('/add-service-request', (req, res) => {
     let serviceRequest = new ServiceRequest({
         userId: req.body.userId,
         address: req.body.address,
+        phoneNumber: req.body.phoneNumber,
         serviceId: req.body.serviceId,
         status: 0,
         handyMan: ""
