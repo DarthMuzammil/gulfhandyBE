@@ -1,4 +1,5 @@
 const ClientUser = require('./model/ClientUser')
+const AdminUser = require('./model/AdminUser')
 const ServiceRequest = require('./model/ServiceRequest')
 const Service = require('./model/Services')
 const express = require('express')
@@ -24,6 +25,28 @@ app.post('/login', async (req, res) => {
 
   // Find the user by username in the database
   const user = await ClientUser.findOne({ username });
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found'});
+  }
+
+  // Compare the provided password with the stored hashed password
+  const passwordMatch = password === user.password
+
+  if (!passwordMatch) {
+    return res.status(401).json({ message: 'Invalid credentials' });
+  }
+
+  // If the credentials are valid, you can generate a JWT or set a session here
+  // For simplicity, we'll just send a success message
+  res.status(200).json({ message: 'Login successful' , id: user.id, status: 200 });
+});
+
+app.post('/backoffice/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  // Find the user by username in the database
+  const user = await AdminUser.findOne({ username });
 
   if (!user) {
     return res.status(404).json({ message: 'User not found'});
@@ -92,7 +115,7 @@ const pipeline = [
     },
   },
   {
-    $unwind: '$serviceDetails', // Unwind the array created by $lookup (optional)
+    $unwind: '$userDetails', // Unwind the array created by $lookup (optional)
   },
   {
     $project: {
